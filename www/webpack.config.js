@@ -35,6 +35,11 @@ module.exports = {
                     },
                 ],
             },
+            {
+                test: /\.svg/,
+                exclude: /node_modules/,
+                use: ["file-loader"],
+            },
         ],
     },
     plugins: [
