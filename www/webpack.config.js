@@ -19,6 +19,24 @@ module.exports = {
             webSocketURL: "ws://0.0.0.0:80/ws",
         },
     },
+    module: {
+        rules: [
+            {
+                test: /\.s(c|a)ss$/,
+                exclude: /node_modules/,
+                use: [
+                    "style-loader",
+                    "css-loader",
+                    {
+                        loader: "sass-loader",
+                        options: {
+                            api: "modern",
+                        },
+                    },
+                ],
+            },
+        ],
+    },
     plugins: [
         new CopyWebpackPlugin({
             patterns: ["index.html"],
