@@ -1,5 +1,6 @@
 import "./styles.scss"
 import * as wasm from "rust-wasm"
+import { memory } from "rust-wasm/rust_wasm_bg.wasm"
 
 function createBoidPath({ length, eccentricity, divet }) {
     let x = length / 2
@@ -17,6 +18,8 @@ function createBoidPath({ length, eccentricity, divet }) {
 let canvas = document.querySelector("#boids-canvas")
 let width = canvas.width
 let height = canvas.height
+let cx = width / 2
+let cy = height / 2
 let ctx = canvas.getContext("2d")
 
 // Get boid svg
@@ -37,7 +40,7 @@ const boid = createBoidPath({
 function drawBoid(x, y, a, color) {
     ctx.save()
     ctx.translate(x, y)
-    ctx.rotate((a * Math.PI) / 180)
+    ctx.rotate(a)
     ctx.fillStyle = color
     ctx.fill(boid)
     ctx.stroke(boid)
@@ -46,10 +49,16 @@ function drawBoid(x, y, a, color) {
 
 let angle = 0
 
+// Initialize simulation
+let sim = wasm.BoidsSim.init(width, height, 4)
+
 // Animation loop
 function animation() {
     ctx.clearRect(0, 0, width, height)
-    drawBoid(width / 2, height / 2, angle, "cyan")
+    for (let { x, y, a } of sim.get_boids()) {
+        drawBoid(x, y, a, "cyan")
+    }
+    sim.update_boids()
 }
 
 // Start animation
