@@ -2,16 +2,22 @@ import "./styles.scss"
 import * as wasm from "rust-wasm"
 import { memory } from "rust-wasm/rust_wasm_bg.wasm"
 
-function createBoidPath({ length, eccentricity, divet }) {
+function createBoid({ length, eccentricity, divet }) {
     let x = length / 2
     let y = (length * eccentricity) / 2
-    return new Path2D(`
+    let path = new Path2D(`
         M ${-x} ${-y} 
         L ${x} 0
         L ${-x} ${y}
         L ${-x + length * divet} 0 
         Z
     `)
+    return {
+        length,
+        eccentricity,
+        divet,
+        path,
+    }
 }
 
 // Get canvas
@@ -23,7 +29,7 @@ let cy = height / 2
 let ctx = canvas.getContext("2d")
 
 // Get boid svg
-const boid = createBoidPath({
+const boid = createBoid({
     length: 20,
     eccentricity: 0.8,
     divet: 0.1,
@@ -42,15 +48,13 @@ function drawBoid(x, y, a, color) {
     ctx.translate(x, y)
     ctx.rotate(a)
     ctx.fillStyle = color
-    ctx.fill(boid)
-    ctx.stroke(boid)
+    ctx.fill(boid.path)
+    ctx.stroke(boid.path)
     ctx.restore()
 }
 
-let angle = 0
-
 // Initialize simulation
-let sim = wasm.BoidsSim.init(width, height, 4)
+let sim = wasm.BoidsSim.init(width, height, boid.length, 4)
 
 // Animation loop
 function animation() {
