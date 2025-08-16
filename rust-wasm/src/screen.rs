@@ -1,3 +1,7 @@
+use nalgebra::Vector3;
+
+use crate::physics::Vector2D;
+
 pub trait ScreenObject {
     fn get_position(&self) -> (f32, f32);
     fn with_position(&self, x: f32, y: f32) -> Self;
@@ -27,4 +31,10 @@ impl Screen {
         let py = teleport_dimension(self.height, self.boundary_offset, y);
         return obj.with_position(px, py);
     }
+}
+
+pub fn cross_2d(a: &Vector2D, b: &Vector2D) -> f32 {
+    let a3 = Vector3::<f32>::new(a[0], a[1], 0.0);
+    let b3 = Vector3::<f32>::new(b[0], b[1], 0.0);
+    a3.cross(&b3)[2]
 }

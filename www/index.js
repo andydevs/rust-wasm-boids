@@ -1,6 +1,5 @@
 import "./styles.scss"
 import * as wasm from "rust-wasm"
-import { memory } from "rust-wasm/rust_wasm_bg.wasm"
 
 function createBoid({ length, eccentricity, divet }) {
     let x = length / 2
@@ -24,8 +23,6 @@ function createBoid({ length, eccentricity, divet }) {
 let canvas = document.querySelector("#boids-canvas")
 let width = canvas.width
 let height = canvas.height
-let cx = width / 2
-let cy = height / 2
 let ctx = canvas.getContext("2d")
 
 // Get boid svg
@@ -53,8 +50,20 @@ function drawBoid(x, y, a, color) {
     ctx.restore()
 }
 
+// Boid parameters
+const min_separation = 20
+const max_angle_change = 0.5
+const boid_count = 10
+
 // Initialize simulation
-let sim = wasm.BoidsSim.init(width, height, boid.length, 4)
+let sim = wasm.BoidsSim.init(
+    width,
+    height,
+    boid.length,
+    min_separation,
+    max_angle_change,
+    boid_count
+)
 
 // Animation loop
 function animation() {

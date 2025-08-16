@@ -3,12 +3,23 @@ use crate::screen::ScreenObject;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct Boid {
     pub x: f32,
     pub y: f32,
     pub s: f32,
     pub a: f32,
+}
+
+impl Boid {
+    pub fn with_angle_change(&self, da: f32) -> Self {
+        Self {
+            x: self.x,
+            y: self.y,
+            s: self.s,
+            a: self.a + da,
+        }
+    }
 }
 
 impl ScreenObject for Boid {
