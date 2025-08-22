@@ -30,7 +30,7 @@ let ctx = canvas.getContext("2d")
 
 // Get boid svg
 const boid = createBoid({
-    length: 17,
+    length: 20,
     eccentricity: 0.9,
     divet: 0.2,
 })
@@ -49,7 +49,6 @@ function drawBoid(x, y, a, color) {
     ctx.rotate(a)
     ctx.fillStyle = color
     ctx.fill(boid.path)
-    ctx.stroke(boid.path)
     ctx.restore()
 }
 
