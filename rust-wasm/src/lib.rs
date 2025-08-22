@@ -1,4 +1,5 @@
 mod boid;
+mod following;
 mod generate_boids;
 mod math;
 mod nearest;
@@ -17,11 +18,13 @@ use std::iter::FromIterator;
 use utils::set_panic_hook;
 use wasm_bindgen::prelude::*;
 
+use crate::following::following_rule;
+
 #[wasm_bindgen]
 pub struct BoidsSim {
     max_query_distance: f32,
     max_angle_change: f32,
-    rule_weights: [f32; 1],
+    rule_weights: [f32; 2],
     screen: Screen,
     boids: Vec<Boid>,
 }
@@ -35,13 +38,14 @@ impl BoidsSim {
         max_query_distance: f32,
         max_angle_change: f32,
         separation_weight: f32,
+        following_weight: f32,
         n: u16,
     ) -> Self {
         set_panic_hook();
         Self {
             max_query_distance: max_query_distance + (boid_length as f32),
             max_angle_change,
-            rule_weights: [separation_weight],
+            rule_weights: [separation_weight, following_weight],
             screen: Screen {
                 width,
                 height,
@@ -63,7 +67,10 @@ impl BoidsSim {
             .map(|boid| self.screen.handle_teleporting(&boid))
             .map(|boid| {
                 let neighbors = nearest_boids(self.max_query_distance, &boid, &self.boids);
-                let rule_outputs = [separation_rule(&boid, &neighbors)];
+                let rule_outputs = [
+                    separation_rule(&boid, &neighbors),
+                    following_rule(&boid, &neighbors),
+                ];
                 let total_angle_factor = rule_outputs
                     .iter()
                     .zip(self.rule_weights)

@@ -55,6 +55,7 @@ const max_separation = 100
 const max_angle_change = 0.9
 const boid_count = 10
 const separation_weight = 1
+const following_weight = 1
 
 // Initialize simulation
 let sim = wasm.BoidsSim.init(
@@ -64,6 +65,7 @@ let sim = wasm.BoidsSim.init(
     max_separation,
     max_angle_change,
     separation_weight,
+    following_weight,
     boid_count
 )
 
