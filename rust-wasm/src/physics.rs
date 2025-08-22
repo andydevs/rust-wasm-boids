@@ -8,6 +8,10 @@ pub trait KinematicObject: ScreenObject + Sized {
         Vector2D::new(x, y)
     }
 
+    fn heading(&self) -> Vector2D {
+        self.velocity().normalize()
+    }
+
     fn relative_to<K: KinematicObject>(&self, other: &K) -> Vector2D {
         self.position() - other.position()
     }

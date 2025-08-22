@@ -1,4 +1,4 @@
-use crate::math::Vector2D;
+use crate::math::{cross_2d, Vector2D};
 use crate::physics::KinematicObject;
 use crate::screen::ScreenObject;
 use wasm_bindgen::prelude::*;
@@ -6,7 +6,7 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
 pub struct Boid {
-    id: u16,
+    pub id: u16,
     pub x: f32,
     pub y: f32,
     pub s: f32,
@@ -24,6 +24,14 @@ impl Boid {
             y: self.y,
             s: self.s,
             a: self.a + da,
+        }
+    }
+    pub fn towards(&self, direction: &Vector2D) -> f32 {
+        let towards = cross_2d(&self.heading(), &direction.normalize());
+        if towards.is_normal() {
+            towards
+        } else {
+            0.0
         }
     }
 }

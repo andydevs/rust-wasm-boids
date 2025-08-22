@@ -1,8 +1,4 @@
-use crate::{
-    boid::Boid,
-    math::{cross_2d, Vector2D},
-    physics::KinematicObject,
-};
+use crate::{boid::Boid, math::Vector2D, physics::KinematicObject};
 
 #[allow(unused)]
 use crate::log;
@@ -22,5 +18,5 @@ pub fn center_rule(target: &Boid, neighbors: &Vec<Boid>) -> f32 {
         .map(|b| b.position() - target.position())
         .map(|v| v * v.magnitude())
         .sum::<Vector2D>();
-    -cross_2d(&center_of_mass.normalize(), &target.velocity().normalize())
+    target.towards(&center_of_mass)
 }

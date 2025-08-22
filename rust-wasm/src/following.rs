@@ -1,8 +1,4 @@
-use crate::{
-    boid::Boid,
-    math::{cross_2d, Vector2D},
-    physics::KinematicObject,
-};
+use crate::{boid::Boid, math::Vector2D, physics::KinematicObject};
 
 #[allow(unused)]
 use crate::log;
@@ -14,9 +10,9 @@ neighbors
 This rule averages the headings with the nearest boids and
 nudges our boid in the same direction */
 pub fn following_rule(target: &Boid, neighbors: &Vec<Boid>) -> f32 {
-    let average_heading = neighbors
-        .iter()
-        .map(|b| b.velocity() / b.velocity().magnitude_squared())
-        .sum::<Vector2D>();
-    -cross_2d(&average_heading, &target.velocity().normalize())
+    if neighbors.len() == 0 {
+        return 0.0;
+    }
+    let average_velocity = neighbors.iter().map(|b| b.velocity()).sum::<Vector2D>();
+    target.towards(&average_velocity)
 }

@@ -1,6 +1,9 @@
 import "./styles.scss"
 import * as wasm from "rust-wasm"
 
+// Boid colors!
+const colors = ["cyan", "coral", "lime", "yellow", "violet"]
+
 function createBoid({ length, eccentricity, divet }) {
     let x = length / 2
     let y = (length * eccentricity) / 2
@@ -27,9 +30,9 @@ let ctx = canvas.getContext("2d")
 
 // Get boid svg
 const boid = createBoid({
-    length: 20,
-    eccentricity: 0.8,
-    divet: 0.1,
+    length: 17,
+    eccentricity: 0.9,
+    divet: 0.2,
 })
 
 /**
@@ -52,10 +55,10 @@ function drawBoid(x, y, a, color) {
 
 // Boid parameters
 const max_query_distance = 100
-const max_angle_change = 0.1
+const max_angle_change = 0.3
 const separation = 50
-const boid_count = 10
-const separation_weight = 10
+const boid_count = 20
+const separation_weight = 1
 const following_weight = 1
 const center_weight = 1
 
@@ -76,8 +79,8 @@ let sim = wasm.BoidsSim.init(
 // Animation loop
 function animation() {
     ctx.clearRect(0, 0, width, height)
-    for (let { x, y, a } of sim.get_boids()) {
-        drawBoid(x, y, a, "cyan")
+    for (let { id, x, y, a } of sim.get_boids()) {
+        drawBoid(x, y, a, colors[id % colors.length])
     }
     sim.update_boids()
 }

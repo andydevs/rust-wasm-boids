@@ -1,8 +1,4 @@
-use crate::{
-    boid::Boid,
-    math::{cross_2d, Vector2D},
-    physics::KinematicObject,
-};
+use crate::{boid::Boid, math::Vector2D, physics::KinematicObject};
 
 #[allow(unused)]
 use crate::log;
@@ -18,10 +14,10 @@ pub fn separation_rule(target: &Boid, neighbors: &Vec<Boid>, separation: f32) ->
     if neighbors.len() == 0 {
         return 0.0;
     }
-    let diff = neighbors
+    let push = neighbors
         .into_iter()
-        .map(|p| p.relative_to(target))
-        .map(|d| d.normalize() * (d.magnitude() - separation))
+        .map(|n| target.relative_to(n))
+        .map(|k| k.normalize() * (separation - k.magnitude()).max(0.0))
         .sum::<Vector2D>();
-    cross_2d(&diff, &target.velocity())
+    target.towards(&push)
 }
