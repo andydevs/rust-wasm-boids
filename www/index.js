@@ -51,8 +51,8 @@ function drawBoid(x, y, a, color) {
 }
 
 // Boid parameters
-const min_separation = 20
-const max_angle_change = 0.5
+const max_separation = 100
+const max_angle_change = 0.9
 const boid_count = 10
 
 // Initialize simulation
@@ -60,7 +60,7 @@ let sim = wasm.BoidsSim.init(
     width,
     height,
     boid.length,
-    min_separation,
+    max_separation,
     max_angle_change,
     boid_count
 )

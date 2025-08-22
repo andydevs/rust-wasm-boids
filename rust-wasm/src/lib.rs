@@ -1,5 +1,6 @@
 mod boid;
 mod generate_boids;
+mod math;
 mod nearest;
 mod physics;
 mod screen;
@@ -8,18 +9,19 @@ mod utils;
 
 use boid::Boid;
 use generate_boids::generate_boids;
+use nearest::nearest_boids;
 use physics::KinematicObject;
 use screen::Screen;
 use separation::separation_rule;
 use std::iter::FromIterator;
+use utils::set_panic_hook;
 use wasm_bindgen::prelude::*;
-
-use crate::utils::set_panic_hook;
 
 #[wasm_bindgen]
 pub struct BoidsSim {
-    min_separation: f32,
+    max_query_distance: f32,
     max_angle_change: f32,
+    rule_weights: [f32; 1],
     screen: Screen,
     boids: Vec<Boid>,
 }
@@ -30,14 +32,16 @@ impl BoidsSim {
         width: u16,
         height: u16,
         boid_length: u16,
-        min_separation: f32,
+        max_query_distance: f32,
         max_angle_change: f32,
+        separation_weight: f32,
         n: u16,
     ) -> Self {
         set_panic_hook();
         Self {
-            min_separation: min_separation + (boid_length as f32),
+            max_query_distance: max_query_distance + (boid_length as f32),
             max_angle_change,
+            rule_weights: [separation_weight],
             screen: Screen {
                 width,
                 height,
@@ -55,9 +59,19 @@ impl BoidsSim {
         let new_boids = self
             .boids
             .iter()
-            .map(|b| b.move_position_with_velocity())
-            .map(|b| self.screen.handle_teleporting(&b))
-            .map(|b| separation_rule(self.min_separation, self.max_angle_change, &b, &self.boids));
+            .map(|boid| boid.move_position_with_velocity())
+            .map(|boid| self.screen.handle_teleporting(&boid))
+            .map(|boid| {
+                let neighbors = nearest_boids(self.max_query_distance, &boid, &self.boids);
+                let rule_outputs = [separation_rule(&boid, &neighbors)];
+                let total_angle_factor = rule_outputs
+                    .iter()
+                    .zip(self.rule_weights)
+                    .map(|(rule, weight)| rule * weight)
+                    .sum::<f32>()
+                    / self.rule_weights.iter().sum::<f32>();
+                boid.with_angle_change(total_angle_factor * self.max_angle_change)
+            });
         self.boids = Vec::from_iter(new_boids);
     }
 }

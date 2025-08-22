@@ -1,13 +1,20 @@
-use crate::screen::ScreenObject;
-pub type Vector2D = nalgebra::Vector2<f32>;
+use crate::{math::Vector2D, screen::ScreenObject};
 
 pub trait KinematicObject: ScreenObject + Sized {
-    fn get_position_vector(&self) -> Vector2D;
-    fn get_velocity_vector(&self) -> Vector2D;
+    fn velocity(&self) -> Vector2D;
+
+    fn position(&self) -> Vector2D {
+        let (x, y) = self.screen_coords();
+        Vector2D::new(x, y)
+    }
+
+    fn relative_to<K: KinematicObject>(&self, other: &K) -> Vector2D {
+        self.position() - other.position()
+    }
 
     fn move_position_with_velocity(&self) -> Self {
-        let p0 = self.get_position_vector();
-        let p1 = p0 + self.get_velocity_vector();
-        self.with_position(p1[0], p1[1])
+        let p0 = self.position();
+        let p1 = p0 + self.velocity();
+        self.with_screen_coords(p1[0], p1[1])
     }
 }
