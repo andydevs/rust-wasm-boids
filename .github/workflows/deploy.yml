@@ -30,6 +30,8 @@ jobs:
             - name: Build Rust Package
               working-directory: ./rust-wasm
               run: wasm-pack build
+              env:
+                  RUSTFLAGS: --cfg getrandom_backend="wasm_js"
 
             # NodeJS
             - name: Install Node Packages
