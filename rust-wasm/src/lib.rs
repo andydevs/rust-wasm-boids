@@ -37,6 +37,7 @@ impl BoidsSim {
         width: u16,
         height: u16,
         boid_length: u16,
+        boid_velocity: f32,
         max_query_distance: f32,
         max_angle_change: f32,
         separation: f32,
@@ -56,7 +57,7 @@ impl BoidsSim {
                 height,
                 boundary_offset: boid_length / 2,
             },
-            boids: generate_boids(width, height, n),
+            boids: generate_boids(width, height, boid_velocity, n),
         }
     }
 
@@ -64,11 +65,11 @@ impl BoidsSim {
         self.boids.clone()
     }
 
-    pub fn update_boids(&mut self) {
+    pub fn update_boids(&mut self, dt: f32) {
         let new_boids = self
             .boids
             .iter()
-            .map(|boid| boid.move_position_with_velocity())
+            .map(|boid| boid.move_position_with_velocity(dt))
             .map(|boid| self.screen.handle_teleporting(&boid))
             .map(|boid| {
                 let neighbors = nearest_boids(self.max_query_distance, &boid, &self.boids);

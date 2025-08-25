@@ -16,9 +16,9 @@ pub trait KinematicObject: ScreenObject + Sized {
         self.position() - other.position()
     }
 
-    fn move_position_with_velocity(&self) -> Self {
+    fn move_position_with_velocity(&self, dt: f32) -> Self {
         let p0 = self.position();
-        let p1 = p0 + self.velocity();
+        let p1 = p0 + self.velocity() * dt;
         self.with_screen_coords(p1[0], p1[1])
     }
 }

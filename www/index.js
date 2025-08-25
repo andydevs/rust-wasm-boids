@@ -1,6 +1,9 @@
 import "./styles.scss"
 import * as wasm from "rust-wasm"
 
+// ms per sec
+const msPerSec = 1000.0
+
 // Boid colors!
 const colors = ["cyan", "coral", "lime", "yellow", "violet"]
 
@@ -57,6 +60,7 @@ const max_query_distance = 100
 const max_angle_change = 0.3
 const separation = 50
 const boid_count = 20
+const boid_velocity = 300
 const separation_weight = 1
 const following_weight = 1
 const center_weight = 1
@@ -66,6 +70,7 @@ let sim = wasm.BoidsSim.init(
     width,
     height,
     boid.length,
+    boid_velocity,
     max_query_distance,
     max_angle_change,
     separation,
@@ -76,17 +81,21 @@ let sim = wasm.BoidsSim.init(
 )
 
 // Animation loop
-function animation() {
+function animation({ dt }) {
     ctx.clearRect(0, 0, width, height)
     for (let { id, x, y, a } of sim.get_boids()) {
         drawBoid(x, y, a, colors[id % colors.length])
     }
-    sim.update_boids()
+    sim.update_boids(dt)
 }
 
 // Start animation
+let start = performance.now() / msPerSec
 let loopFunc = () => {
-    animation()
+    let end = performance.now() / msPerSec
+    let dt = end - start
+    start = end
+    animation({ dt })
     requestAnimationFrame(loopFunc)
 }
 requestAnimationFrame(loopFunc)
