@@ -13,11 +13,12 @@ module.exports = {
     },
     devServer: {
         allowedHosts: "all",
+        open: true,
         host: "0.0.0.0",
         port: 8080,
         client: {
             webSocketURL: "ws://0.0.0.0:80/ws",
-        },
+        }
     },
     module: {
         rules: [

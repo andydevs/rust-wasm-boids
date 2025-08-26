@@ -26,7 +26,6 @@ pub struct BoidsSim {
     max_query_distance: f32,
     max_angle_change: f32,
     separation: f32,
-    rule_weights: [f32; 3],
     screen: Screen,
     boids: Vec<Boid>,
 }
@@ -41,9 +40,6 @@ impl BoidsSim {
         max_query_distance: f32,
         max_angle_change: f32,
         separation: f32,
-        separation_weight: f32,
-        following_weight: f32,
-        center_weight: f32,
         n: u16,
     ) -> Self {
         set_panic_hook();
@@ -51,7 +47,6 @@ impl BoidsSim {
             max_query_distance: max_query_distance + (boid_length as f32),
             max_angle_change,
             separation: separation + (boid_length as f32),
-            rule_weights: [separation_weight, following_weight, center_weight],
             screen: Screen {
                 width,
                 height,
@@ -78,13 +73,8 @@ impl BoidsSim {
                     following_rule(&boid, &neighbors),
                     center_rule(&boid, &neighbors),
                 ];
-                let total_angle_factor = rule_outputs
-                    .iter()
-                    .zip(self.rule_weights)
-                    .map(|(rule, weight)| rule * weight)
-                    .sum::<f32>()
-                    / self.rule_weights.iter().sum::<f32>();
-                boid.with_angle_change(total_angle_factor * self.max_angle_change)
+                let total_angle_factor = rule_outputs.iter().sum::<f32>();
+                boid.with_angle_change(total_angle_factor * self.max_angle_change * dt)
             });
         self.boids = Vec::from_iter(new_boids);
     }

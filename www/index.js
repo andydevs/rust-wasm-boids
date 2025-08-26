@@ -59,7 +59,7 @@ function drawBoid(x, y, a, color) {
 const max_query_distance = 100
 const max_angle_change = 0.3
 const separation = 50
-const boid_count = 20
+const boid_count = 50
 const boid_velocity = 300
 const separation_weight = 1
 const following_weight = 1
