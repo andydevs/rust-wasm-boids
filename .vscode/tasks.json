@@ -1,0 +1,27 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build-rust",
+			"detail": "Build the Rust code to WebAssembly",
+			"type": "process",
+			"command": "wasm-pack",
+			"args": [
+				"build"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/rust-wasm"
+			}
+		},
+		{
+			"label": "npm-start",
+			"detail": "Run npm start in the www folder to start the web server",
+			"dependsOn": [
+				"build-rust"
+			],
+			"type": "npm",
+			"script": "start",
+			"path": "www"
+		}
+	]
+}
